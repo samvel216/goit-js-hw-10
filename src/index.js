@@ -44,39 +44,36 @@ const getFullCard = (country) => {
 .join("");
 countryListEl.innerHTML = markup;
 }
+const removeLi = () => {
+    const cardLiEl = document.querySelector("li");
+    cardLiEl.remove();
+}
+const removeAllLi = (cardLiAllEl) => {
+    for (let cardLi of cardLiAllEl) {
+        cardLi.remove();  
+     }
+}
 const getCard = (countryName) => {  
     getFetchResponse(countryName).then(country => {
     let countryKeysLength = Object.keys(country).length;
-    if (countryKeysLength > 10 && countryName.length > 0) {
+    if (countryKeysLength > 10) {
         Notiflix.Notify.info('Too many matches found. Please enter a more specific name.');
-    } else if (countryKeysLength > 2 && countryKeysLength < 10) {
+    } else if (countryKeysLength >= 2 && countryKeysLength <= 10) {
         getFlagAndName(country);
-    } else if (countryKeysLength < 2) {
+    } else if (countryKeysLength === 1) {
         getFullCard(country);
     }
     }    
     ).catch(error => {
-       if (countryName.length > 5 && error) {
+       if (error) {
         Notiflix.Notify.failure('Oops, there is no country with that name');
-        const dssdsd = document.querySelectorAll("li");
-        console.log(dssdsd);
-        for (let sdsd of dssdsd) {
-           sdsd.style.opacity = "0";  
-        }
+        const cardLiAllEl = document.querySelectorAll("li");
+        removeAllLi(cardLiAllEl);
        }
     })   
 }
 const throttledd = debounce(getCard, DEBOUNCE_DELAY);
 let i = 0;
-const opacityLi = () => {
-    const cardLiEl = document.querySelector("li");
-    cardLiEl.style.opacity = "0";
-}
-const opacityAllLi = (cardLiAllEl) => {
-    for (let cardLi of cardLiAllEl) {
-        cardLi.style.opacity = "0";  
-     }
-}
 const inputOnGetCard = (event) => {
     event.preventDefault();
     i++;
@@ -85,10 +82,10 @@ const inputOnGetCard = (event) => {
         throttledd(countryName);
     } else if (i > 0 && countryName.length < 1) {
      const cardLiAllEl = document.querySelectorAll("li");
-     if (cardLiAllEl.length < 2) {
-        opacityLi();
+     if (cardLiAllEl.length === 1 ) {
+        removeLi();
      }
-     opacityAllLi(cardLiAllEl);
+     removeAllLi(cardLiAllEl);
     }
 }
 inputSearchBoxEl.addEventListener('input', inputOnGetCard);
